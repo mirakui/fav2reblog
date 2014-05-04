@@ -1,0 +1,12 @@
+log_file: /tmp/fav2reblog.log
+position_file: /tmp/fav2reblog.pos
+tumblr:
+  consumer_key:
+  consumer_secret:
+  access_token:
+  access_secret:
+twitter:
+  consumer_key:
+  consumer_secret:
+  access_token:
+  access_secret:

@@ -1,4 +1,7 @@
 #!/usr/bin/env ruby
 require 'bundler/setup'
+$: << File.expand_path('../../lib', __FILE__)
+require 'fav2reblog/engine'
 
-
+engine = Fav2reblog::Engine.new
+engine.execute
