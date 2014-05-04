@@ -14,7 +14,7 @@ module Fav2reblog
       )
     end
 
-    def post_photo(blog: config['blog'], data:, caption:, link:)
+    def post_photo(blog: config['blog'], data: nil, caption: nil, link: nil)
       client.photo blog, data: data, caption: caption, link: link
     end
 
