@@ -7,9 +7,9 @@ Gem::Specification.new do |spec|
   spec.name          = "fav2reblog"
   spec.version       = Fav2reblog::VERSION
   spec.authors       = ["Issei Naruta"]
-  spec.email         = ["naruta@cookpad.com"]
-  spec.summary       = %q{TODO: Write a short summary. Required.}
-  spec.description   = %q{TODO: Write a longer description. Optional.}
+  spec.email         = ["mimitako@gmail.com"]
+  spec.summary       = %q{When fav some tweets which include image(s), then post it to tumblr}
+  spec.description   = %q{When fav some tweets which include image(s), then reblog it to tumblr.}
   spec.homepage      = ""
   spec.license       = "MIT"
 
@@ -20,4 +20,6 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency "bundler", "~> 1.5"
   spec.add_development_dependency "rake"
+  spec.add_dependency 'twitter', '~> 5.8.0'
+  spec.add_dependency 'tumblr_client'
 end
