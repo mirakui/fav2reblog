@@ -7,7 +7,6 @@ module Fav2reblog
       return @client if @client
       c = config
       @client = ::Tumblr::Client.new(
-        #client: :httpclient,
         consumer_key: c['consumer_key'],
         consumer_secret: c['consumer_secret'],
         oauth_token: c['access_token'],
