@@ -41,9 +41,6 @@ module Fav2reblog
       image_files = tweet.media.map {|m| open(m.media_uri) }
       data = image_files.map {|f| f.path }
       caption = %Q(Twitter / #{tweet.user.screen_name}: #{tweet.full_text})
-      tweet.media.each do |m|
-        caption.gsub!(m.url, %Q(<a href="#{m.url}">#{m.display_url}</a>))
-      end
       link = tweet.uri
       logger.info("reblog: id=#{tweet.id}, data=#{data}, caption=#{caption}, link=#{link}")
       @tumblr.post_photo data: data, caption: caption, link: link
