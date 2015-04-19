@@ -2,6 +2,33 @@
 require 'bundler/setup'
 $: << File.expand_path('../../lib', __FILE__)
 require 'fav2reblog/engine'
+require 'optparse'
+
+interval = nil
+config_path = 'config/config.yml'
+dry_run = false
+verbose = false
+
+opt = OptionParser.new(ARGV)
+opt.on('-iSEC', '--interval=SEC', 'loop interval') {|v| interval = v.to_i }
+opt.on('--once', 'execute only once') {|v| interval = nil }
+opt.on('-cPATH', '--config=PATH', 'path to config file (default=config/config.yml)') {|v| config_path = v }
+opt.on('--dry-run', "don't tweet anything, don't update last_id position") { dry_run = true }
+opt.on('-v', '--verbose', "make log-level debug") { verbose = true }
+opt.parse!
+
+Fav2reblog.load_config config_path
 
 engine = Fav2reblog::Engine.new
-engine.execute
+engine.logger.level = Logger::DEBUG if verbose
+
+if interval
+  is_first = true
+  loop do
+    engine.execute dry_run: is_first || dry_run, update_last_id: !dry_run
+    is_first = false
+    sleep interval
+  end
+else
+  engine.execute dry_run: dry_run, update_last_id: !dry_run
+end
