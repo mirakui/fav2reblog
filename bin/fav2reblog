@@ -23,6 +23,7 @@ engine = Fav2reblog::Engine.new
 engine.logger.level = Logger::DEBUG if verbose
 
 if interval
+  $stdout.sync = true
   is_first = true
   loop do
     engine.execute dry_run: is_first || dry_run, update_last_id: !dry_run
