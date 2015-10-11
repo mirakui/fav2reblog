@@ -2,6 +2,7 @@
 require 'bundler/setup'
 $: << File.expand_path('../../lib', __FILE__)
 require 'fav2reblog/engine'
+require 'fav2reblog/version'
 require 'optparse'
 
 interval = nil
@@ -21,6 +22,7 @@ Fav2reblog.load_config config_path
 
 engine = Fav2reblog::Engine.new
 engine.logger.level = Logger::DEBUG if verbose
+engine.logger.info "started fav2reblog v#{Fav2reblog::VERSION}"
 
 if interval
   $stdout.sync = true
