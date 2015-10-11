@@ -1,8 +1,8 @@
 GIT
   remote: git://github.com/mirakui/fav2reblog.git
-  revision: a5c5db5454b4c030d27f05999b2ac59924a4d7eb
+  revision: 8e82dd56ab647eda6cf68136b40c0f7a922ced86
   specs:
-    fav2reblog (0.1.0)
+    fav2reblog (0.1.1)
       tumblr_client (~> 0.8.5)
       twitter (~> 5.15.0)
 
@@ -65,4 +65,4 @@ DEPENDENCIES
   fav2reblog!
 
 BUNDLED WITH
-   1.10.4
+   1.10.6
