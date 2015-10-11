@@ -5,6 +5,8 @@ require 'fav2reblog/engine'
 require 'fav2reblog/version'
 require 'optparse'
 
+$stdout.sync = true
+
 interval = nil
 config_path = 'config/config.yml'
 dry_run = false
@@ -25,7 +27,6 @@ engine.logger.level = Logger::DEBUG if verbose
 engine.logger.info "started fav2reblog v#{Fav2reblog::VERSION}"
 
 if interval
-  $stdout.sync = true
   is_first = true
   loop do
     engine.execute dry_run: is_first || dry_run, update_last_id: !dry_run
