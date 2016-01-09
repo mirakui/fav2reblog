@@ -29,10 +29,10 @@ engine.logger.info "started fav2reblog v#{Fav2reblog::VERSION}"
 if interval
   is_first = true
   loop do
-    engine.execute dry_run: is_first || dry_run, update_last_id: !dry_run
+    engine.execute dry_run: is_first || dry_run
     is_first = false
     sleep interval
   end
 else
-  engine.execute dry_run: dry_run, update_last_id: !dry_run
+  engine.execute dry_run: dry_run
 end

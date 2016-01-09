@@ -1,6 +1,7 @@
 require 'fav2reblog'
 require 'fav2reblog/twitter'
 require 'fav2reblog/tumblr'
+require 'fav2reblog/dynamodb'
 require 'open-uri'
 require 'logger'
 
@@ -9,6 +10,7 @@ module Fav2reblog
     def initialize
       @twitter = Fav2reblog::Twitter.new
       @tumblr = Fav2reblog::Tumblr.new
+      @dynamodb = Fav2reblog::Dynamodb.new
     end
 
     def last_id
@@ -20,31 +22,34 @@ module Fav2reblog
       id
     end
 
-    def set_last_id(id, update_file: true)
-      path = Fav2reblog.config['position_file']
-      open(path, 'w') {|f| f.write id } if update_file
-      id
+    def update_reblogged_tweet(tweet)
+      @dynamodb.put tweet.id, 'uri' => tweet.uri.to_s, 'reblogged_at' => Time.now.to_i
     end
 
-    def execute(dry_run: false, update_last_id: true)
-      _last_id = last_id.to_i
-      logger.debug("execute: last_id=#{_last_id}")
+    def reblogged?(status_id)
+      item = @dynamodb.get status_id
+      !!item
+    end
+
+    def execute(dry_run: false)
       @twitter.favorites_with_media.each do |tweet|
-        next if _last_id >= tweet.id
-        reblog tweet, dry_run: dry_run, update_last_id: update_last_id
+        next if reblogged? tweet.id
+        reblog tweet, dry_run: dry_run
       end
     rescue
       logger.error "#{$!.class}: #{$!}\n  #{$@.join("\n  ")}"
     end
 
-    def reblog(tweet, dry_run: false, update_last_id: true)
+    def reblog(tweet, dry_run: false)
       image_files = tweet.media.map {|m| open(m.media_uri) }
       data = image_files.map {|f| f.path }
       caption = %Q(Twitter / #{tweet.user.screen_name}: #{tweet.full_text})
       link = tweet.uri
       logger.info("reblog: id=#{tweet.id}, data=#{data}, caption=#{caption}, link=#{link}")
-      @tumblr.post_photo data: data, caption: caption, link: link unless dry_run
-      set_last_id tweet.id, update_file: update_last_id
+      unless dry_run
+        @tumblr.post_photo data: data, caption: caption, link: link unless dry_run
+        update_reblogged_tweet tweet
+      end
     end
 
     def logger

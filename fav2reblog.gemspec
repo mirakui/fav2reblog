@@ -22,4 +22,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake"
   spec.add_dependency 'twitter', '~> 5.15.0'
   spec.add_dependency 'tumblr_client', '~> 0.8.5'
+  spec.add_dependency 'aws-sdk-core', '~> 2.0'
 end
