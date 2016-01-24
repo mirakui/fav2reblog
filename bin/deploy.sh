@@ -15,7 +15,7 @@ if [ $NEW_VERSION ]; then
   echo -n "Are you sure to deploy $NAME ($NEW_VERSION)? (y/n): "
   read yn
   if [ $yn != "y" ]; then
-    echo 'aborted'
+    echo "aborted"
     exit 1
   fi
 else
@@ -45,5 +45,9 @@ cd docker
 docker build -t $NEW_TAG .
 docker tag $NEW_TAG $NEW_IMAGE_URI
 gcloud docker push $NEW_IMAGE_URI
-kubectl rolling-update $NAME --image=$NEW_IMAGE_URI
+if kubectl get rc $NAME; then
+  kubectl rolling-update $NAME --image=$NEW_IMAGE_URI
+else
+  kubectl run $NAME --image=$NEW_IMAGE_URI
+fi
 kubectl describe pods $NAME
