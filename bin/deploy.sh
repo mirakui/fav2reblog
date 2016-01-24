@@ -46,4 +46,4 @@ docker build -t $NEW_TAG .
 docker tag $NEW_TAG $NEW_IMAGE_URI
 gcloud docker push $NEW_IMAGE_URI
 kubectl rolling-update $NAME --image=$NEW_IMAGE_URI
-kubectl describe rc $NAME
+kubectl describe pods $NAME
