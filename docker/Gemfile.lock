@@ -1,8 +1,8 @@
 GIT
   remote: git://github.com/mirakui/fav2reblog.git
-  revision: c931434c37880381028fa085c15212d0e279a689
+  revision: 7a76738e2c8a0b816b9612a31d4285464eed8401
   specs:
-    fav2reblog (0.1.2)
+    fav2reblog (0.1.3)
       aws-sdk-core (~> 2.0)
       tumblr_client (~> 0.8.5)
       twitter (~> 5.15.0)
@@ -11,7 +11,7 @@ GEM
   remote: https://rubygems.org/
   specs:
     addressable (2.4.0)
-    aws-sdk-core (2.2.9)
+    aws-sdk-core (2.2.13)
       jmespath (~> 1.0)
     buftok (0.2.0)
     domain_name (0.5.25)

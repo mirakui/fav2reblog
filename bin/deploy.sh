@@ -42,6 +42,7 @@ fi
 
 set -x
 cd docker
+bundle update $NAME
 docker build -t $NEW_TAG .
 docker tag $NEW_TAG $NEW_IMAGE_URI
 gcloud docker push $NEW_IMAGE_URI
