@@ -18,6 +18,10 @@ module Fav2reblog
       client.photo blog, data: data, caption: caption, link: link
     end
 
+    def post_video(blog: config['blog'], data: nil, caption: nil)
+      client.video blog, data: data, caption: caption
+    end
+
     private
     def config
       Fav2reblog.config['tumblr']

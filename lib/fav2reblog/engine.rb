@@ -41,15 +41,56 @@ module Fav2reblog
     end
 
     def reblog(tweet, dry_run: false)
-      image_files = tweet.media.map {|m| open(m.media_uri) }
+      case tweet.media.first
+      when ::Twitter::Media::AnimatedGif
+        reblog_video tweet, dry_run: dry_run
+      when ::Twitter::Media::Video
+        reblog_video tweet, dry_run: dry_run
+      when ::Twitter::Media::Photo
+        reblog_photo tweet, dry_run: dry_run
+      end
+    end
+
+    def reblog_photo(tweet, dry_run: false)
+      media_uris = tweet.media.map {|m| "#{m.media_uri}:orig" }
+      image_files = media_uris.map {|uri| open(uri) }
       data = image_files.map {|f| f.path }
-      caption = %Q(Twitter / #{tweet.user.screen_name}: #{tweet.full_text})
+      caption = caption_of tweet
       link = tweet.uri
-      logger.info("reblog: id=#{tweet.id}, data=#{data}, caption=#{caption}, link=#{link}")
+      logger.info("reblog: id=#{tweet.id}, media=#{media_uris}, caption=#{caption}, link=#{link}")
       unless dry_run
         @tumblr.post_photo data: data, caption: caption, link: link unless dry_run
         update_reblogged_tweet tweet
       end
+    end
+
+    def reblog_video(tweet, dry_run: false)
+      caption = caption_of tweet
+      link = tweet.uri
+      logger.info("ignored video: media=#{tweet.media.first.class}, id=#{tweet.id}, caption=#{caption}, link=#{link}")
+    end
+
+    def reblog_video_(tweet, dry_run: false)
+      media_uris = tweet.media.map do |media|
+        media.video_info.attrs[:variants].
+          select {|v| v[:content_type] == 'video/mp4' }.
+          sort_by {|v| v[:bitrate] }.
+          last[:url]
+      end
+
+      image_files = media_uris.map {|uri| open(uri) }
+      data = image_files.map {|f| f.path }
+      caption = caption_of tweet
+      link = tweet.uri
+      logger.info("reblog: id=#{tweet.id}, media=#{media_uris}, caption=#{caption}, link=#{link}")
+      unless dry_run
+        @tumblr.post_video data: data, caption: caption unless dry_run
+        update_reblogged_tweet tweet
+      end
+    end
+
+    def caption_of(tweet)
+      %Q(Twitter / #{tweet.user.screen_name}: #{tweet.full_text})
     end
 
     def logger
