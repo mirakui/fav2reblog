@@ -13,15 +13,6 @@ module Fav2reblog
       @dynamodb = Fav2reblog::Dynamodb.new
     end
 
-    def last_id
-      id = nil
-      path = Fav2reblog.config['position_file']
-      if path && File.exist?(path)
-        id = File.read(path).to_i
-      end
-      id
-    end
-
     def update_reblogged_tweet(tweet)
       @dynamodb.put tweet.id, 'uri' => tweet.uri.to_s, 'reblogged_at' => Time.now.to_i
     end
