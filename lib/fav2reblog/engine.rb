@@ -23,7 +23,9 @@ module Fav2reblog
 
     def execute(dry_run: false)
       @twitter.favorites_with_media.each do |tweet|
+        Fav2reblog.logger.debug "#{tweet.id}: #{caption_of(tweet)} reblogged=#{reblogged?(tweet.id)}"
         next if reblogged? tweet.id
+        Fav2reblog.logger.debug "reblogging #{tweet.id}"
         reblog tweet, dry_run: dry_run
       end
     rescue
@@ -48,8 +50,11 @@ module Fav2reblog
       caption = caption_of tweet
       link = tweet.uri
       Fav2reblog.logger.info("reblog: id=#{tweet.id}, media=#{media_uris}, caption=#{caption}, link=#{link}")
-      unless dry_run
-        @tumblr.post_photo data: data, caption: caption, link: link unless dry_run
+      if dry_run
+        Fav2reblog.logger.debug "didn't update last_id since dry_run mode"
+      else
+        Fav2reblog.logger.debug "posting to tumblr #{tweet.id}"
+        @tumblr.post_photo data: data, caption: caption, link: link
         update_reblogged_tweet tweet
       end
     end
@@ -58,25 +63,6 @@ module Fav2reblog
       caption = caption_of tweet
       link = tweet.uri
       Fav2reblog.logger.info("ignored video: media=#{tweet.media.first.class}, id=#{tweet.id}, caption=#{caption}, link=#{link}")
-    end
-
-    def reblog_video_(tweet, dry_run: false)
-      media_uris = tweet.media.map do |media|
-        media.video_info.attrs[:variants].
-          select {|v| v[:content_type] == 'video/mp4' }.
-          sort_by {|v| v[:bitrate] }.
-          last[:url]
-      end
-
-      image_files = media_uris.map {|uri| open(uri) }
-      data = image_files.map {|f| f.path }
-      caption = caption_of tweet
-      link = tweet.uri
-      Fav2reblog.logger.info("reblog: id=#{tweet.id}, media=#{media_uris}, caption=#{caption}, link=#{link}")
-      unless dry_run
-        @tumblr.post_video data: data, caption: caption unless dry_run
-        update_reblogged_tweet tweet
-      end
     end
 
     def caption_of(tweet)

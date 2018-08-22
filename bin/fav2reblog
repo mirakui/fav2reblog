@@ -27,6 +27,7 @@ engine = Fav2reblog::Engine.new
 Fav2reblog.logger.info "started fav2reblog v#{Fav2reblog::VERSION}"
 
 if interval
+  Fav2reblog.logger.debug "running interval mode (#{interval} sec)"
   is_first = true
   loop do
     engine.execute dry_run: is_first || dry_run
@@ -34,5 +35,6 @@ if interval
     sleep interval
   end
 else
+  Fav2reblog.logger.debug "running once"
   engine.execute dry_run: dry_run
 end
