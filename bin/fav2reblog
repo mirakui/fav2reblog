@@ -21,10 +21,10 @@ opt.on('-v', '--verbose', "make log-level debug") { verbose = true }
 opt.parse!
 
 Fav2reblog.load_config config_path
+Fav2reblog.logger.level = Logger::DEBUG if verbose
 
 engine = Fav2reblog::Engine.new
-engine.logger.level = Logger::DEBUG if verbose
-engine.logger.info "started fav2reblog v#{Fav2reblog::VERSION}"
+Fav2reblog.logger.info "started fav2reblog v#{Fav2reblog::VERSION}"
 
 if interval
   is_first = true

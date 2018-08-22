@@ -3,7 +3,6 @@ require 'fav2reblog/twitter'
 require 'fav2reblog/tumblr'
 require 'fav2reblog/dynamodb'
 require 'open-uri'
-require 'logger'
 
 module Fav2reblog
   class Engine
@@ -28,7 +27,7 @@ module Fav2reblog
         reblog tweet, dry_run: dry_run
       end
     rescue
-      logger.error "#{$!.class}: #{$!}\n  #{$@.join("\n  ")}"
+      Fav2reblog.logger.error "#{$!.class}: #{$!}\n  #{$@.join("\n  ")}"
     end
 
     def reblog(tweet, dry_run: false)
@@ -48,7 +47,7 @@ module Fav2reblog
       data = image_files.map {|f| f.path }
       caption = caption_of tweet
       link = tweet.uri
-      logger.info("reblog: id=#{tweet.id}, media=#{media_uris}, caption=#{caption}, link=#{link}")
+      Fav2reblog.logger.info("reblog: id=#{tweet.id}, media=#{media_uris}, caption=#{caption}, link=#{link}")
       unless dry_run
         @tumblr.post_photo data: data, caption: caption, link: link unless dry_run
         update_reblogged_tweet tweet
@@ -58,7 +57,7 @@ module Fav2reblog
     def reblog_video(tweet, dry_run: false)
       caption = caption_of tweet
       link = tweet.uri
-      logger.info("ignored video: media=#{tweet.media.first.class}, id=#{tweet.id}, caption=#{caption}, link=#{link}")
+      Fav2reblog.logger.info("ignored video: media=#{tweet.media.first.class}, id=#{tweet.id}, caption=#{caption}, link=#{link}")
     end
 
     def reblog_video_(tweet, dry_run: false)
@@ -73,7 +72,7 @@ module Fav2reblog
       data = image_files.map {|f| f.path }
       caption = caption_of tweet
       link = tweet.uri
-      logger.info("reblog: id=#{tweet.id}, media=#{media_uris}, caption=#{caption}, link=#{link}")
+      Fav2reblog.logger.info("reblog: id=#{tweet.id}, media=#{media_uris}, caption=#{caption}, link=#{link}")
       unless dry_run
         @tumblr.post_video data: data, caption: caption unless dry_run
         update_reblogged_tweet tweet
@@ -84,12 +83,5 @@ module Fav2reblog
       %Q(Twitter / #{tweet.user.screen_name}: #{tweet.full_text})
     end
 
-    def logger
-      @logger ||= begin
-                    l = Logger.new(Fav2reblog.config['log_file'] || $stdout)
-                    l.level = Logger::INFO
-                    l
-                  end
-    end
   end
 end
